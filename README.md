@@ -38,3 +38,11 @@ The workflow integrates **Twilio WhatsApp API**, **n8n**, and **OpenAI** to crea
 7. Summary is sent back to the user on WhatsApp  
 
 ---
+## 🔁 Import Workflow
+
+1. Open n8n
+2. Click **Import Workflow**
+3. Upload `whatsapp-pdf-workflow.json`
+4. Configure credentials
+5. Activate workflow
+
