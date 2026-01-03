@@ -1,0 +1,309 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a589942c-2451-4d0b-b01c-aedb7f520d2a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ed1ad028-bf08-4a8a-a3dc-55601bbc0b5b",
+      "name": "Webhook",
+      "webhookId": "a589942c-2451-4d0b-b01c-aedb7f520d2a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "578f17b4-c21b-4273-8ab3-903cfce35a81",
+              "name": "userMessage",
+              "value": "={{$json.body.Body}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a7438494-c58e-4ac9-a8e1-21134eebae39",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=User request:\n{{$json.userMessage}}\n\nDocument content:\n{{$json.text}}\n\nSummarize the document in under 1200 characters.\n\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "22455e77-75d7-4dda-9aa9-5665478c86fb",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vyFbpz6mPaQhoVNk",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+917338321261",
+        "toWhatsapp": true,
+        "message": "={{$json.output[0].content[0].text}}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        0
+      ],
+      "id": "c4f12f71-0e88-4896-9a4a-b02db107dd82",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "wpVo7NStjZSjK9oi",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c652491d-84ac-423b-ab2e-24b8723324f4",
+              "leftValue": "={{$json.body.NumMedia}} \n\n",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0c29cb18-0feb-4d9a-b84f-3a0a40e57062",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "03632609-adff-41a2-a519-05ececb26ac8",
+              "leftValue": "={{$json.body.MediaContentType0}}\n\n",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "3355f820-4ec8-45d2-8e3f-726b2d23d3d2",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.body.MediaUrl0}}\n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        832,
+        -192
+      ],
+      "id": "e15ab649-bb87-4962-897d-90faa6946dbe",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VrMTisGsc4lVXGi4",
+          "name": "Unnamed credential 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        -192
+      ],
+      "id": "097c2911-61ca-41fd-be1e-d0487d4bf8e3",
+      "name": "Extract from File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "2c28c4fc-525d-448c-b0f2-97f76b5dc9e9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2402261c4e98167048d16f8306c50e5a1ce404d4793aa14e68712e90912b8a8d"
+  },
+  "id": "w28QnzSYLf8n5D0o",
+  "tags": []
+}
